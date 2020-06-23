@@ -29,15 +29,15 @@
 from __future__ import (division, print_function, absolute_import)
 import numpy as np
 from itertools import product                               # cartesian product of sets
-from scipy.integrate import cumtrapz
-from scipy.stats import t as student_t
+from scipy.integrate import cumtrapz                        # trapezoidal rule for integration
+from scipy.stats import t as student_t                      # student-t distribution
 from scipy.stats import gaussian_kde                        # kernel density estimation
 from scipy.stats import norm, gamma                         # normal and gamma distribution  
 from matplotlib import rc                                   # plot parameter
 rc('font', family='serif')
 rc('font', size=12)
 # rc('text', usetex=True)        
-import matplotlib.pyplot as plt   
+import matplotlib.pyplot as plt                             # plot environment
 
 def nig_prior(U_y0, sig0):
     """
@@ -197,6 +197,21 @@ def plot_result_phi(phi_samples, unc_0, sig0,
                     output="figure2.pdf",
                     interactive=False,
                     use_kde=False):
+    """
+    Helper function to plot the posterior results of phi
+
+    Arguments:
+        phi_samples {list or array} -- posterior samples of phi
+        unc_0 {float} -- uncertainty of measurand
+        sig0 {float} -- uncertainty of measurement device
+
+    Keyword Arguments:
+        xlim {tuple} -- bounds to plot in (default: {None})
+        n_bins {int} -- number of bins for histogram (default: {200})
+        output {str} -- path and name of output file (default: {"figure2.pdf"})
+        interactive {bool} -- flag to hold the image (default: {False})
+        use_kde {bool} -- flag to use kernel density estimation (default: {False})
+    """
 
     _, a, b = nig_prior(unc_0, sig0)   # Note that lambda is a Python specific keyword
     # define the inverse gamma pdf
@@ -235,6 +250,28 @@ def plot_result(bayes_samples,
                 hold=False,
                 interactive=False,
                 use_kde=False):
+    """
+    plots the resulting posterior to a file
+
+    Arguments:
+        bayes_samples {list or array} -- posterior samples
+        mean_0 {float} -- mean of measurand
+        unc_0 {float} -- uncertainty of measurand
+        sig0 {float} -- uncertainty of measurement device
+
+    Keyword Arguments:
+        s1_samples {list or array} -- GUM S1 samples (default: {None})
+        mean_gum {float} -- mean by GUM (default: {None})
+        u_gum {float} -- uncertainty by GUM (default: {None})
+        title {str} -- title of figure (default: {"Example"})
+        xlabel {str} -- x label string (default: {"Y"})
+        xlim {tuple} -- bounds to plot in (default: {None})
+        n_bins {int} -- number of bins in histogram (default: {200})
+        output {str} -- path and name of figure (default: {"figure.pdf"})
+        hold {bool} -- flag to hold the image (experimental) (default: {False})
+        interactive {bool} -- flag to hold the image (default: {False})
+        use_kde {bool} -- flag to use kernel density estimation (default: {False})
+    """
 
     llambda, a, b = nig_prior(unc_0, sig0)   # Note that lambda is a Python specific keyword
     fig = plt.figure()
@@ -273,6 +310,26 @@ def plot_sensitivity(bayes_samples,
                      xlabel="", output="figure3.pdf",
                      interactive=False, 
                      use_kde=False):
+    """
+    Helper function to plot the results of the sensitivity analysis.
+
+    Arguments:
+        bayes_samples {list or array} -- posterior samples 
+        x {list or array} -- measurements
+        mean_0 {float} -- mean of measurand
+        unc_0 {float} -- uncertainty of measurand
+        sig0 {float} -- measurement device uncertainty
+        alpha {float} -- model parameter Y = alpha X + B
+        B_S1_samples {list or array} -- samples of B
+        n_samples {int} -- number of samples to create for every bootstrap
+
+    Keyword Arguments:
+        xlim {tuple} -- bounds to plot in (default: {None})
+        xlabel {str} -- x label string (default: {""})
+        output {str} -- path and name of output file (default: {"figure3.pdf"})
+        interactive {bool} -- flag to hold image (default: {False})
+        use_kde {bool} -- flag to use kernel density estimation (default: {False})
+    """
     # Sensitivity analysis
     dlt = 0.1
     delta_U_y0 = np.array([1, -1])*dlt + 1
@@ -335,14 +392,15 @@ def export_samples(samples, file_path):
         samples {list} -- samples to export
         file_path {str} -- name and path to file
     
+    Returns:
+        None
     TODO: appropriate error handling
     """    
     with open(file_path, 'w') as f:
         for sample in samples:
             f.write(str(sample) + "\n")
 
-# KDE is motivated by the following blog-post
-# https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/    
+
 def get_pdf_from_samples(samples, method="kde", *args, **kwargs):
     """
     Method to construct a pdf from given samples.
@@ -351,12 +409,16 @@ def get_pdf_from_samples(samples, method="kde", *args, **kwargs):
     TODO: Consider Silverman bandwith selection. 
     See https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html for details
     Alternatively, histograms can be chosen.
+    Return type depends on input values.
 
     Arguments:
         samples {list} -- list of samples 
        
     Keyword Arguments:
         method {str} -- methods string {"kde", "hist"} (default: {"kde"})
+
+    Returns:
+        callable or (list, list) -- PDF as function or (x, y) values
     """
     used_method = "kde"
     bins = kwargs.pop("bins", None)
@@ -378,6 +440,16 @@ def get_pdf_from_samples(samples, method="kde", *args, **kwargs):
         raise ValueError("unknown density estimation method: {}".format(method))
 
 def analyse_bootstrap_res(res):
+    """
+    Processes the result of the bootstrap algorithm by estimating the uncertainty
+    for the given quantity bootstraps.
+
+    Arguments:
+        res {dict} -- dictionary containing bootstrap results
+
+    Returns:
+        dict -- estimated uncertainty over bootstrap ensembles
+    """
     assert len(res["Y"]) == len(res["B"])
     assert len(res["Y"]) == len(res["phi"])
     lb = 2.5
@@ -441,6 +513,9 @@ def print_results(res, bootstrap_res=None):
 
     Keyword Arguments:
         boot_res {dict} -- bootstrap results (default: {None})
+
+    Returns 
+        str -- summary of results as printable string
     """
     dash = '-'*(4*15+15)
     mean = "mean"
@@ -489,6 +564,18 @@ def print_results(res, bootstrap_res=None):
     return retval_str
 
 def generate_mass_example_samples(n_samples, path):
+    """
+    internal function to create Monte-Carlo samples as described in 
+    the mass example
+    This function was used to generate mass/B_samples_init.dat
+
+    Arguments:
+        n_samples {int} -- number of samples
+        path {str} -- path to store the resulting samples
+
+    Returns 
+        None
+    """
     # samples for B (input)     
     n_B_samples = n_samples        # number of samples
     B_samples=5+22.5*np.random.randn(n_B_samples) + \
@@ -498,6 +585,17 @@ def generate_mass_example_samples(n_samples, path):
     export_samples(B_samples, path)
 
 def generate_mass_example_measurements(path):
+    """
+    internal function to create the measurements as described in 
+    the mass example
+    This function was used to generate mass/measurements.dat
+
+    Arguments:
+        path {str} -- path to store the resulting measurements
+
+    Returns 
+        None
+    """
     mraw=np.array([10,20,25,15,25,50,55,20,25,45,40,20]) #difference reading
     seq= np.array([1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1], dtype=np.bool)    #1=standard, 0=unknown mass
     # observed differences (n=3)
