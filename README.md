@@ -1,7 +1,4 @@
-# README #
-'''
- License
- =======
+# License
  
  copyright Gerd Wuebbeler, Manuel Marschall (PTB) 2020
  
@@ -26,7 +23,7 @@
  for any direct, indirect or consequential damage arising in connection
 
  Paper DOI: ???
-'''
+
 
 
 This repository contains the python code provided in the paper "A simple method for Bayesian uncertainty evaluation in linear models".
