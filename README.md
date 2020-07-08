@@ -34,12 +34,20 @@ This repository contains the python code provided in the paper "A simple method 
 The paper provides a simple and easy method to employ the Bayesian paradigm for typical applications in metrology. 
 The suggested choice for the prior, the sampling methods and the analysis of the resulting posterior is covered in this repository.
 
-### Installation and running the code 
+## Installation and running the code 
 
 To run the script one needs a $\geq$ python 3.6 installation with the default packages
 * numpy
 * scipy
 * matplotlib
+
+### Installation using pip
+
+Install via the python package manager `pip` using
+
+```
+  pip install simplebayesuncertainty
+```
 
 Installation guides for Linux, Windows and Mac can be found here: https://realpython.com/installing-python/
 
