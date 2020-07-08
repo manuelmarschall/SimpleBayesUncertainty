@@ -24,8 +24,10 @@
  suitability or any other characteristic. In no event will PTB be liable
  for any direct, indirect or consequential damage arising in connection
 
-Using this software in publications requires citing the following
- Paper: https://doi.org/10.1088/1681-7575/aba3b8
+Using this software in publications requires citing the following paper
+
+G. Wübbeler, M. Marschall and C. Elster (2020). A simple method for Bayesian uncertainty evaluation in linear models. 
+Metrologia   https://doi.org/10.1088/1681-7575/aba3b8
 '''
 from __future__ import (division, print_function, absolute_import)
 from simplebayesuncertainty.bayes_uncertainty_util import (import_file, 
