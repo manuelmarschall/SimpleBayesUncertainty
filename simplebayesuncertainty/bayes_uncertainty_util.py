@@ -24,7 +24,8 @@
  suitability or any other characteristic. In no event will PTB be liable
  for any direct, indirect or consequential damage arising in connection
 
- Paper DOI: ???
+Using this software in publications requires citing the following
+ Paper: https://doi.org/10.1088/1681-7575/aba3b8
 '''
 from __future__ import (division, print_function, absolute_import)
 import numpy as np

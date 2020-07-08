@@ -24,10 +24,13 @@
  suitability or any other characteristic. In no event will PTB be liable
  for any direct, indirect or consequential damage arising in connection
 
- Paper DOI: ???
+Using this software in publications requires citing the following
+ Paper: https://doi.org/10.1088/1681-7575/aba3b8
 '''
 from __future__ import (division, print_function, absolute_import)
-from bayes_uncertainty_util import (import_file, bayes_uncertainty, plot_result, plot_result_phi, plot_sensitivity, export_samples, analyse_bootstrap_res, print_results)
+from simplebayesuncertainty.bayes_uncertainty_util import (import_file, 
+               bayes_uncertainty, plot_result, plot_result_phi, plot_sensitivity, 
+               export_samples, analyse_bootstrap_res, print_results)
 import numpy as np
 import time
 import os
